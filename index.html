@@ -1,72 +1,36 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Brawl Game</title>
-  <style>
-    canvas { background: #eee; }
-  </style>
-</head>
-<body>
-<canvas id="game" width="400" height="400"></canvas>
+let board = [
+  ["l","n","s","g","k","g","s","n","l"],
+  ["","r","","","","","","b",""],
+  ["p","p","p","p","p","p","p","p","p"],
+  ["","","","","","","","",""],
+  ["","","","","","","","",""],
+  ["","","","","","","","",""],
+  ["P","P","P","P","P","P","P","P","P"],
+  ["","B","","","","","","R",""],
+  ["L","N","S","G","K","G","S","N","L"]
+];
+function canMove(piece, sx, sy, tx, ty){
+  let dx = tx - sx;
+  let dy = ty - sy;
 
-<script>
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
+  if(piece === "P"){ // 先手の歩
+    return dx === 0 && dy === -1;
+  }
 
-let player = {x:200, y:200, size:20};
-let bullets = [];
-let enemy = {x:100, y:100, size:20};
-
-let keys = {};
-
-document.addEventListener("keydown", e => keys[e.key] = true);
-document.addEventListener("keyup", e => keys[e.key] = false);
-
-canvas.addEventListener("click", e => {
-  bullets.push({x:player.x, y:player.y, dx:(e.offsetX-player.x)/10, dy:(e.offsetY-player.y)/10});
-});
-
-function update(){
-  if(keys["w"]) player.y -= 3;
-  if(keys["s"]) player.y += 3;
-  if(keys["a"]) player.x -= 3;
-  if(keys["d"]) player.x += 3;
-
-  bullets.forEach(b => {
-    b.x += b.dx;
-    b.y += b.dy;
-
-    // 当たり判定
-    if(Math.abs(b.x - enemy.x) < 20 && Math.abs(b.y - enemy.y) < 20){
-      enemy.x = Math.random()*400;
-      enemy.y = Math.random()*400;
-    }
-  });
+  if(piece === "p"){ // 後手
+    return dx === 0 && dy === 1;
+  }
 }
-
-function draw(){
-  ctx.clearRect(0,0,400,400);
-
-  // プレイヤー
-  ctx.fillStyle = "blue";
-  ctx.fillRect(player.x, player.y, player.size, player.size);
-
-  // 敵
-  ctx.fillStyle = "red";
-  ctx.fillRect(enemy.x, enemy.y, enemy.size, enemy.size);
-
-  // 弾
-  ctx.fillStyle = "black";
-  bullets.forEach(b => ctx.fillRect(b.x, b.y, 5, 5));
+function promote(piece, y){
+  if(piece === "P" && y <= 2){
+    return "+P"; // と金
+  }
+  return piece;
 }
-
-function gameLoop(){
-  update();
-  draw();
-  requestAnimationFrame(gameLoop);
+let hand = {
+  black: [],
+  white: []
+};
+    function isCheck(kingPos){
+  // 相手の全駒が王に届くか調べる
 }
-
-gameLoop();
-</script>
-</body>
-</html>
